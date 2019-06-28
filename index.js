@@ -8,8 +8,18 @@ const resolve = require('resolve');
 module.exports = {
   name: 'ember-cli-bootstrap-colorpicker',
 
-  included(app) {
-    this.app = app;
+  included() {
+    let current = this;
+
+    // Keep iterating upward until we don't have a grandparent.
+    // Has to do this grandparent check because at some point we hit the project.
+    do {
+      if (current.lazyLoading === true || (current.lazyLoading && current.lazyLoading.enabled === true)) {
+        app = current;
+        break;
+      }
+      app = current.app || app;
+    } while (current.parent.parent && (current = current.parent));
 
     this._super.included(app);
 
